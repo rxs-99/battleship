@@ -1,0 +1,7 @@
+<div id="menu-wrapper">
+    <ul id="menu">
+        <li *ngFor="let menuItem of menu">
+            <button (click)="onClick(menuItem)">{{menuItem}}</button>
+        </li>
+    </ul>
+</div>
