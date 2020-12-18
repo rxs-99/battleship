@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { GameService } from 'src/app/services/game/game.service';
 
 @Component({
   selector: 'app-home',
@@ -9,7 +11,7 @@ export class HomeComponent implements OnInit {
 
   menu: string[] = [];
 
-  constructor() { }
+  constructor(private gameService: GameService, private router: Router) { }
 
   ngOnInit(): void {
     this.menu.push("New Game");
@@ -18,8 +20,11 @@ export class HomeComponent implements OnInit {
   }
 
   onClick(menuOption: string): void{
-    if(menuOption === "New Game")
-      console.log("TODO -- " + menuOption);
+    if(menuOption === "New Game"){
+      this.gameService.setRow(10);
+      this.gameService.setCol(10);
+      this.router.navigateByUrl("/body/game");
+    }
     else if(menuOption === "Load Game")
       console.log("TODO -- " + menuOption);
     else if(menuOption === "Toggle Sound")

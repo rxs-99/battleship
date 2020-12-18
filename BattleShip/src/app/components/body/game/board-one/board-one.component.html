@@ -1,0 +1,9 @@
+<div class='board-wrapper'>
+    <div class="row-tiles" *ngFor="let i of row | numToArr">
+        <div *ngFor="let j of row | numToArr">
+            <button class="game-tiles" id={{i}}{{j|numToAlpha}}>
+                {{i}}{{j|numToAlpha}}
+            </button>
+        </div>
+    </div>
+</div>
