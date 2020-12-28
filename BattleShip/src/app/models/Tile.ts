@@ -1,7 +1,7 @@
 export class Tile{
-    id: string;
-    hasShipFlag: boolean;
-    isUsedFlag: boolean;
+    private id: string;
+    private hasShipFlag: boolean;
+    private isUsedFlag: boolean;
 
     constructor(id: string, hasShipFlag: boolean, isUsedFlag: boolean){
         this.id = id;

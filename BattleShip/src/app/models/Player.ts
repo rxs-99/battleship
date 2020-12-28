@@ -1,5 +1,5 @@
 export class Player {
-    username: string;
+    private username: string;
 
     constructor(username?: string){
         if(username)

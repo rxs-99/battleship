@@ -25,9 +25,17 @@ export class GameComponent implements OnInit {
 
   ngOnInit(): void {
     this.playerOneFlag = true;
-    this.playerTwoFlag = false;
+    this.playerTwoFlag = false;    
+    this.game = new Game();
+    this.start();
+  }
 
-    this.boardService.generateBoard();
+  start(): void{
+    this.game.setBoard1(this.boardService.generateBoard());
+    this.game.setBoard2(this.boardService.generateBoard());
+    
+    console.log(this.game.getBoard1());
+    console.log(this.game.getBoard2());
   }
 
 }

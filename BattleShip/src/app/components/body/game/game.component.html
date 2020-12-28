@@ -1,5 +1,21 @@
 <div id="game-wrapper">
-    <app-board-one></app-board-one>
+    <div id="board-one-wrapper">
+        <div class="row-tiles" *ngFor="let row of game.getBoard1().getTiles()">
+            <div *ngFor="let col of row">
+                <button class="game-tiles" id={{col.getId()}}>
+                    {{col.getId()}}
+                </button>
+            </div>
+        </div>
+    </div>
     <div id="vertical-line"></div>
-    <app-board-two></app-board-two>
+    <div id="board-two-wrapper">
+        <div class="row-tiles" *ngFor="let row of game.getBoard2().getTiles()">
+            <div *ngFor="let col of row">
+                <button class="game-tiles" id={{col.getId()}}>
+                    {{col.getId()}}
+                </button>
+            </div>
+        </div>
+    </div>
 </div>

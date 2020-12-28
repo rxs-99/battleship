@@ -6,8 +6,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
-import { BoardOneComponent } from './components/body/game/board-one/board-one.component';
-import { BoardTwoComponent } from './components/body/game/board-two/board-two.component';
 import { HomeComponent } from './components/body/home/home.component';
 import { LoginComponent } from './components/body/login/login.component';
 import { RegisterComponent } from './components/body/register/register.component';
@@ -22,8 +20,6 @@ import { NumToAlphaPipe } from './pipes/NumberToAlphabet/num-to-alpha.pipe';
     AppComponent,
     HeaderComponent,
     FooterComponent,
-    BoardOneComponent,
-    BoardTwoComponent,
     HomeComponent,
     LoginComponent,
     RegisterComponent,
