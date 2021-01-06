@@ -1,12 +1,12 @@
 <div id="game-wrapper">
     <div id="board-one-wrapper">
         <div class="row-tiles" *ngFor="let rowTiles of game.getBoard1().getTiles()" [class.disabled]="playerOneFlag">
-            <div *ngFor="let tile of rowTiles" class="game-tiles" id={{tile.getId()}} (click)="onClickTile(tile)"
+            <div *ngFor="let tile of rowTiles" class="game-tiles" id={{tile.getId()}} (click)="startFlag && onClickTile(tile)"
                 [class.hit-tile]="tile.hasShip() && tile.isUsed()"
                 [class.missed-tile]="!tile.hasShip() && tile.isUsed()" [class.disabled]="tile.isUsed()" 
                 [class.pre-ship-drop]="tile.getPreHasShipFlag()" [class.has-ship]="tile.hasShip()" 
                 [class.tile-ship-droppable]="!tile.isShipDroppable()"
-                (drop)="onDrop($event, tile)" (dragleave)="onDragLeave($event, tile)" (dragover)="onDragOver($event, tile)">
+                (drop)="!startFlag && onDrop($event, tile)" (dragleave)="!startFlag && onDragLeave($event, tile)" (dragover)="!startFlag && onDragOver($event, tile)">
                 {{tile.getId()}}
             </div>
         </div>

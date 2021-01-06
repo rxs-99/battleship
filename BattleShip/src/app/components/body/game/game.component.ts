@@ -35,6 +35,9 @@ export class GameComponent implements OnInit {
   // number of ships not on board
   numShipsNotOnBoard: number;
 
+  // flag for when the user presses start button to start the game after placing the ships
+  startFlag: boolean;
+
   constructor(private boardService: BoardService, private gameService: GameService) { }
 
   ngOnInit(): void {
@@ -45,9 +48,10 @@ export class GameComponent implements OnInit {
     this.ships = [];
     this.shipAliveCount = 0;
     this.generateShips();
+    this.startFlag = false;
 
     this.game = new Game();
-
+    
     // generate boards
     this.game.setBoard1(this.boardService.generateBoard());
     this.game.setBoard2(this.boardService.generateBoard());
@@ -56,7 +60,8 @@ export class GameComponent implements OnInit {
   }
 
   start(): void {
-    this.togglePlayerFlag();    
+    this.togglePlayerFlag();
+    this.startFlag = true;    
   }
 
   onClickTile(tile: Tile): void {
@@ -86,7 +91,6 @@ export class GameComponent implements OnInit {
 
     if (!tile.hasShip()) this.dragDropServiceForTiles("drop", tile);
     this.currentShip = null;
-    console.log(this.numShipsNotOnBoard);
   }
 
   onDragLeave(ev: Event, tile: Tile): void {
@@ -107,13 +111,13 @@ export class GameComponent implements OnInit {
     let tileCount: number = 0;
 
     if (this.currentShip.isHorizontal()) {
-
       // count free tiles in +ve direction
       for (let i = 0; i < this.currentShip.getLength(); i++) {
         let j: number = tile.getXPos() + i;
-        if (j < this.gameService.getCol())
-          if (!tiles[tile.getYPos()][j].hasShip())
-            tileCount++;
+        
+        if (j > this.gameService.getCol()-1) break;
+        if (tiles[tile.getYPos()][j].hasShip()) break;
+        tileCount++;
       }
       // if enough free tiles in +ve direction
       if (tileCount == this.currentShip.getLength()) {
@@ -133,11 +137,11 @@ export class GameComponent implements OnInit {
         while (tileCount != this.currentShip.getLength()) {
           i++;
           let j: number = tile.getXPos() - i;
-          if (j < 0)
-            break;
+          if (j < 0) break;
           if (tiles[tile.getYPos()][j].hasShip()) break;
           tileCount++;
         }
+
         // if enough tiles in both -ve and +ve direction combined
         if (tileCount === this.currentShip.getLength()) {
           for (let j: number = tile.getXPos() - i; j < tile.getXPos() - i + tileCount; j++) {
