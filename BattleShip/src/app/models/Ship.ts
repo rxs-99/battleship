@@ -5,15 +5,25 @@ export class Ship{
     private startingIndex: number;
     private horizontalFlag: boolean;
     private notOnBoardFlag: boolean;
+    private height: number;
+    private width: number;
 
     constructor(name: string, horizontalFlag?: boolean, id?: string){
         this.name = name;
         this.setLength(name);
 
-        if(horizontalFlag) this.horizontalFlag = horizontalFlag; else this.horizontalFlag = true;
+        if(horizontalFlag != undefined) this.horizontalFlag = horizontalFlag; else this.horizontalFlag = true;
 
         if(id) this.id = id;
         this.notOnBoardFlag = true;
+
+        if(this.horizontalFlag) {
+            this.height = 50;
+            this.width = 50 * this.length;
+        } else {
+            this.width = 50;
+            this.height = 50 * this.length;
+        }
     }
 
     setName(name: string): void{
@@ -68,5 +78,20 @@ export class Ship{
 
     getNotOnBoardFlag(): boolean{
         return this.notOnBoardFlag;
+    }
+
+    getHeight(): number{
+        return this.height;
+    }
+
+    getWidth(): number{
+        return this.width;
+    }
+
+    toggleOrientation(): void{
+        this.horizontalFlag = !this.horizontalFlag;
+        let temp: number = this.height;
+        this.height = this.width;
+        this.width = temp;
     }
 }

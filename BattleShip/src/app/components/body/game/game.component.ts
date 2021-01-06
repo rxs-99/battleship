@@ -188,7 +188,65 @@ export class GameComponent implements OnInit {
 
 
 
-      // TODO
+
+      // count free tiles in +ve direction
+      for (let i = 0; i < this.currentShip.getLength(); i++) {
+        let j: number = tile.getYPos() + i;
+        
+        if (j > this.gameService.getRow()-1) break;
+        if (tiles[j][tile.getXPos()].hasShip()) break;
+        tileCount++;
+      }
+      // if enough free tiles in +ve direction
+      if (tileCount == this.currentShip.getLength()) {
+        for (let i = 0; i < this.currentShip.getLength(); i++) {
+          if (event === "drop") tiles[tile.getYPos() + i][tile.getXPos()].setPreHasShipFlagAndHasShipFlag(false, true);
+          else tiles[tile.getYPos() + i][tile.getXPos()].setPreHasShipFlag(event === "over" ? true : false);
+        }
+
+        if(event === "drop"){
+          this.currentShip.setNotOnBoardFlag(false);
+            this.numShipsNotOnBoard--;
+        }
+
+        // if not enough free tiles in +ve direction, look for tile sin -ve direction
+      } else {
+        let i: number = 0;
+        while (tileCount != this.currentShip.getLength()) {
+          i++;
+          let j: number = tile.getYPos() - i;
+          if (j < 0) break;
+          if (tiles[j][tile.getXPos()].hasShip()) break;
+          tileCount++;
+        }
+
+        // if enough tiles in both -ve and +ve direction combined
+        if (tileCount === this.currentShip.getLength()) {
+          for (let j: number = tile.getYPos() - i; j < tile.getYPos() - i + tileCount; j++) {
+            // tiles[tile.getYPos()][j].setPreHasShipFlag(true);
+            if (event === "drop") {
+              tiles[j][tile.getXPos()].setPreHasShipFlagAndHasShipFlag(false, true);
+            }
+            else tiles[j][tile.getXPos()].setPreHasShipFlag(event === "over" ? true : false);
+          }
+
+          if(event === "drop"){
+            this.currentShip.setNotOnBoardFlag(false);
+              this.numShipsNotOnBoard--;
+          }
+
+          // if not enough tiles to place the ship then
+        } else {
+          i--;
+          while (true) {
+            if (tile.getYPos() - i >= this.gameService.getRow()) break;
+            if (tiles[tile.getYPos() - i][tile.getXPos()].hasShip()) break;
+            tiles[tile.getYPos() - i][tile.getXPos()].setIsShipDroppable(event === "over" ? false : true);
+            i--;
+          }
+        }
+      }
+
     }
   }
 }

@@ -24,8 +24,8 @@
     <div class="vertical-line"></div>
     <div id="ships-wrapper">
         <ng-container *ngFor="let s of ships">
-            <div *ngIf="s.getNotOnBoardFlag()" class="ship" [id]="'ship-' + s.getName()" [style.width.px]="50 * s.getLength()" [draggable]="'true'"
-                (dragstart)="onDragStart(s)">
+            <div *ngIf="s.getNotOnBoardFlag()" class="ship" [id]="'ship-' + s.getName()" [style.width.px]="s.getWidth()" [style.height.px]="s.getHeight()" [draggable]="'true'"
+                (dragstart)="onDragStart(s)" (click)="s.toggleOrientation()">
             </div>
         </ng-container>
     </div>
