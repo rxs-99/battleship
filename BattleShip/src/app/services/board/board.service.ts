@@ -35,7 +35,7 @@ export class BoardService {
     for(let i = 0; i < this.gameService.getRow(); i++){
       tempBoard.getTiles().push(new Array<Tile>());
       for(let j = 0; j < this.gameService.getCol(); j++){
-        let tempTile = new Tile((i+1)+this.numToAlpha.transform(j+1), false, false);
+        let tempTile = new Tile((i+1)+this.numToAlpha.transform(j+1), false, false, j,  i);
         tempBoard.getTiles()[i].push(tempTile);
       }
     }

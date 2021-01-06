@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -14,6 +15,8 @@ import { FormsModule } from '@angular/forms';
 import { GameComponent } from './components/body/game/game.component';
 import { NumToArrPipe } from './pipes/NumberToArray/num-to-arr.pipe';
 import { NumToAlphaPipe } from './pipes/NumberToAlphabet/num-to-alpha.pipe';
+import { ShipComponent } from './components/ship/ship.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -26,13 +29,16 @@ import { NumToAlphaPipe } from './pipes/NumberToAlphabet/num-to-alpha.pipe';
     BodyComponent,
     GameComponent,
     NumToArrPipe,
-    NumToAlphaPipe
+    NumToAlphaPipe,
+    ShipComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    BrowserAnimationsModule,
+    DragDropModule
   ],
   providers: [],
   bootstrap: [AppComponent]

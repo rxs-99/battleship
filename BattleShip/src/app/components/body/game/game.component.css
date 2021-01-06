@@ -3,7 +3,7 @@
     flex-direction: row;
 }
 
-#vertical-line {
+.vertical-line {
     margin: 2px;
 }
 
@@ -20,4 +20,35 @@
     width: 50px;
     height: 50px;
 
+    display: flex;
+    align-items: center;
+    justify-content: center;    
 }
+
+.disabled .game-tiles {
+    color: gray;
+    border-color: gray;
+}
+
+.disabled {
+    pointer-events: none;
+}
+
+.ship {
+    height: 50px;
+    width: 50px;
+    border: 1px solid red;
+}
+
+.has-ship {
+    background-color: green;
+}
+
+.pre-ship-drop {
+    background-color: blue;
+}
+
+.tile-ship-droppable {
+    background-color: red;
+}
+
