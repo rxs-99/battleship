@@ -14,7 +14,7 @@
 
 .game-tiles {
     border-width: 1px;
-    border-style: ridge;
+    border-style: solid;
     border-color: black;
 
     width: 50px;
@@ -38,6 +38,7 @@
     height: 50px;
     width: 50px;
     border: 1px solid red;
+    margin: 2px;
 }
 
 .has-ship {

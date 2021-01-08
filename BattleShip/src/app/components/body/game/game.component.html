@@ -16,6 +16,7 @@
         <div class="row-tiles" *ngFor="let rowTiles of game.getBoard2().getTiles()" [class.disabled]="playerTwoFlag">
             <div *ngFor="let tile of rowTiles" class="game-tiles" id={{tile.getId()}} (click)="onClickTile(tile)"
                 [class.hit-tile]="tile.hasShip() && tile.isUsed()"
+                [class.has-ship]="tile.hasShip()"
                 [class.missed-tile]="!tile.hasShip() && tile.isUsed()" [class.disabled]="tile.isUsed()">
                 {{tile.getId()}}
             </div>
@@ -30,4 +31,5 @@
         </ng-container>
     </div>
     <button (click)="start()" [disabled]="numShipsNotOnBoard != 0">Start</button>
+    <button (click)="onClickRandomPlace()">Random</button>
 </div>

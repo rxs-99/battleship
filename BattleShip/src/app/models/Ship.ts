@@ -2,6 +2,7 @@ export class Ship{
     private id: string;
     private name: string;
     private length: number;
+    private lives: number;
     private startingIndex: number;
     private horizontalFlag: boolean;
     private notOnBoardFlag: boolean;
@@ -11,6 +12,7 @@ export class Ship{
     constructor(name: string, horizontalFlag?: boolean, id?: string){
         this.name = name;
         this.setLength(name);
+        this.lives = this.length;
 
         if(horizontalFlag != undefined) this.horizontalFlag = horizontalFlag; else this.horizontalFlag = true;
 
@@ -93,5 +95,13 @@ export class Ship{
         let temp: number = this.height;
         this.height = this.width;
         this.width = temp;
+    }
+
+    setLives(num: number): void{
+        this.lives = num;
+    }
+
+    getLives(): number{
+        return this.lives;
     }
 }
