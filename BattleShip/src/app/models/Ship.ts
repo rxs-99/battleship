@@ -11,6 +11,7 @@ export class Ship{
 
     constructor(name: string, horizontalFlag?: boolean, id?: string){
         this.name = name;
+        this.id = this.name;
         this.setLength(name);
         this.lives = this.length;
 

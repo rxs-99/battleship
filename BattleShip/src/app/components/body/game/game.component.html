@@ -5,9 +5,11 @@
                 [class.hit-tile]="tile.hasShip() && tile.isUsed()"
                 [class.missed-tile]="!tile.hasShip() && tile.isUsed()" [class.disabled]="tile.isUsed()" 
                 [class.pre-ship-drop]="tile.getPreHasShipFlag()" [class.has-ship]="tile.hasShip()" 
-                [class.tile-ship-droppable]="!tile.isShipDroppable()"
+                [class.tile-ship-not-droppable]="!tile.isShipDroppable()"
+                [class.neighbor-tile]="tile.isNeighborOfShip()"
                 (drop)="!startFlag && onDrop($event, tile)" (dragleave)="!startFlag && onDragLeave($event, tile)" (dragover)="!startFlag && onDragOver($event, tile)">
-                {{tile.getId()}}
+                <!-- {{tile.getId()}} -->
+                 {{tile.tileText}}
             </div>
         </div>
     </div>
@@ -17,8 +19,10 @@
             <div *ngFor="let tile of rowTiles" class="game-tiles" id={{tile.getId()}} (click)="onClickTile(tile)"
                 [class.hit-tile]="tile.hasShip() && tile.isUsed()"
                 [class.has-ship]="tile.hasShip()"
+                [class.neighbor-tile]="tile.isNeighborOfShip()"
                 [class.missed-tile]="!tile.hasShip() && tile.isUsed()" [class.disabled]="tile.isUsed()">
-                {{tile.getId()}}
+                <!-- {{tile.getId()}} -->
+                 {{tile.tileText}}
             </div>
         </div>
     </div>

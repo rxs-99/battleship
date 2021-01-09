@@ -1,3 +1,5 @@
+import { Ship } from "./Ship";
+
 export class Tile{
     // combination of row(1-10) and column(A-J)
     private id: string;
@@ -6,7 +8,7 @@ export class Tile{
     // row position
     private yPos: number;
     // ship id
-    private shipID: string;
+    private ship: Ship;
     // flag for if a ship is dragged over the the tile and is a candidate for hosting the ship
     private preHasShipFlag: boolean
     // flag for if a tile has ship
@@ -15,8 +17,12 @@ export class Tile{
     private isUsedFlag: boolean;
     // flag for if a ship can be dropped in the tile or not
     private isShipDroppableFlag: boolean;
+    // flag for if a tile is a neighbor of a tile containing ship
+    private isNeighborOfShipFlag: boolean;
 
-    constructor(id: string, hasShipFlag: boolean, isUsedFlag: boolean, xPos?: number, yPos?: number, shipID?: string){
+    tileText: string;
+
+    constructor(id: string, hasShipFlag: boolean, isUsedFlag: boolean, xPos?: number, yPos?: number, ship?: Ship){
         this.id = id;
         this.hasShipFlag = hasShipFlag;
         this.isUsedFlag = isUsedFlag;
@@ -24,11 +30,13 @@ export class Tile{
             this.xPos = xPos;
             this.yPos = yPos;
         }
-        if(shipID){
-            this.shipID = shipID;
+        if(ship){
+            this.ship = ship;
         }
         this.preHasShipFlag = false;
         this.isShipDroppableFlag = true;
+        this.isNeighborOfShipFlag = false;
+        this.tileText = "";
     }
 
     getId(): string{
@@ -71,12 +79,12 @@ export class Tile{
         this.yPos = yPos;
     }
 
-    setShipID(shipID: string): void{
-        this.shipID = shipID;
+    setShip(ship: Ship): void{
+        this.ship = ship;
     }
 
-    getShipID(): string{
-        return this.shipID;
+    getShip(): Ship{
+        return this.ship;
     }
 
     setPreHasShipFlag(flag: boolean): void{
@@ -98,5 +106,13 @@ export class Tile{
 
     isShipDroppable(): boolean{
         return this.isShipDroppableFlag;
+    }
+
+    setIsNeighborOfShipFlag(flag: boolean): void{
+        this.isNeighborOfShipFlag = flag;
+    }
+
+    isNeighborOfShip(): boolean{
+        return this.isNeighborOfShipFlag;
     }
 }

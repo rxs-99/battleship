@@ -1,6 +1,7 @@
 #game-wrapper {
     display: flex;
     flex-direction: row;
+    padding: 15px;
 }
 
 .vertical-line {
@@ -41,6 +42,10 @@
     margin: 2px;
 }
 
+.neighbor-tile {
+    background-color:blueviolet;
+}
+
 .has-ship {
     background-color: green;
 }
@@ -49,7 +54,16 @@
     background-color: blue;
 }
 
-.tile-ship-droppable {
+.tile-ship-not-droppable {
     background-color: red;
 }
+
+.hit-tile {
+    color: red !important;
+}
+
+.missed-tile {
+    color: black !important;
+}
+
 
