@@ -444,20 +444,20 @@ export class GameComponent implements OnInit {
 
   randomShipPlacement(s: Ship, tiles: Tile[][]): void {
 
-    // 0 if vertical, 1 if horizontal
-    let isHorizontal: number = Math.floor(Math.random() * 2);
-    s.setIsHorizontal(isHorizontal ? true : false);
-
     let repeatFlag: boolean;
 
     do {
+      // 0 if vertical, 1 if horizontal
+      let isHorizontal: number = Math.floor(Math.random() * 2);
+      s.setIsHorizontal(isHorizontal ? true : false);
+
       repeatFlag = false;
 
       // index for where to start
       let x: number = Math.floor(Math.random() * this.gameService.getCol());
       let y: number = Math.floor(Math.random() * this.gameService.getRow());
 
-      console.log('checking for: (' + y + ',' + x + ') ');
+      // console.log('checking for: (' + y + ',' + x + ') ');
 
       let tile: Tile;
 
@@ -489,12 +489,12 @@ export class GameComponent implements OnInit {
           tile.setShip(s);
         }
         s.setNotOnBoardFlag(false);
-        console.log('for starting (' + y + ',' + x + ') ');
+        // console.log('for starting (' + y + ',' + x + ') ');
         let pLim = !isHorizontal ? y + s.getLength() : y + 1;
         let qLim = isHorizontal ? x + s.getLength() : x + 1;
         for (let p = y - 1; p <= pLim; p++) {
           for (let q = x - 1; q <= qLim; q++) {
-            console.log('(' + p + ',' + q + ') ');
+            // console.log('(' + p + ',' + q + ') ');
             if (p >= 0 && p < this.gameService.getRow() && q >= 0 && q < this.gameService.getCol()) {
               tiles[p][q].setIsNeighborOfShipFlag(true);
             }
@@ -522,9 +522,7 @@ export class GameComponent implements OnInit {
     let x: number;
     let y: number;
 
-    if (this.aiHitShip) {
-      console.log("yay");
-    } else {
+    {
       do {
         x = Math.floor(Math.random() * this.gameService.getCol());
         y = Math.floor(Math.random() * this.gameService.getRow());
