@@ -41,7 +41,7 @@ export class GameComponent implements OnInit {
 
   // for AI's move
   // tile of a ship that is hit first by the AI
-  aiHitTile: Tile;
+  aiPrevTile: Tile;
   // ship associated with the aiHitTile
   aiHitShip: Ship;
   // ship orientation -- 0 for vertical, 1 for horizontal
@@ -50,8 +50,13 @@ export class GameComponent implements OnInit {
   // 0 if false, 1 if true, -1 if undecided
   // up,down,left,right respectively starting form index 0
   predictFlags: number[];
+  // helps to determine the orientation
+  // same as above, value of 0, 1, 2, 3 represent up, down, left, right respectively
+  prePredictFlags: number[];
   // hit streak on a particular direction
   streak: number;
+  // all possible tile indices to choose from
+  aiChooseTiles: number[][];
 
 
   // flag for when the user presses start button to start the game after placing the ships
@@ -77,14 +82,16 @@ export class GameComponent implements OnInit {
     this.game.setBoard2(this.boardService.generateBoard());
 
     this.placeAIShips();
+    this.populateAIChooseTiles();
 
     this.numShipsNotOnBoard = 5;
 
-    this.aiHitTile = null;
+    this.aiPrevTile = null;
     this.aiHitShip = null;
     this.aiHitShipOrientation = -1;
     this.streak = 1;
-    this.predictFlags = [-1, -1, -1, -1];
+    this.resetPredictFlags();
+    this.resetPrePredictFlags();
   }
 
   start(): void {
@@ -99,8 +106,11 @@ export class GameComponent implements OnInit {
       if (tile.getShip().getLives() === 0) {
         this.opponentShipAliveCount--;
         if (this.opponentShipAliveCount === 0) {
-          alert("You beat the computer!");
-          this.router.navigateByUrl("/body/home");
+          setTimeout(() => {
+            alert("You beat the computer!");
+            this.router.navigateByUrl("/body/home");
+          }, 0.25);
+
         }
       }
     }
@@ -165,7 +175,7 @@ export class GameComponent implements OnInit {
       if (this.currentShip.isHorizontal()) {
         j = tile.getXPos() + i;
         if (j > this.gameService.getCol() - 1) break;
-        if (tiles[tile.getYPos()][j].hasShip() || tiles[tile.getYPos()][j].isNeighborOfShip() ) break;
+        if (tiles[tile.getYPos()][j].hasShip() || tiles[tile.getYPos()][j].isNeighborOfShip()) break;
       } else {
         j = tile.getYPos() + i;
         if (j > this.gameService.getRow() - 1) break;
@@ -239,7 +249,7 @@ export class GameComponent implements OnInit {
           this.numShipsNotOnBoard--;
 
           let pStart: number; let pLim: number; let qStart: number; let qLim: number;
-          if(this.currentShip.isHorizontal()){
+          if (this.currentShip.isHorizontal()) {
             pStart = tile.getYPos();
             qStart = jStart;
             pLim = tile.getYPos() + 1;
@@ -435,6 +445,7 @@ export class GameComponent implements OnInit {
       for (let t of tArr) {
         t.setHasShipFlag(false);
         t.setIsNeighborOfShipFlag(false);
+        t.setShip(null);
       }
 
     for (let s of this.ships)
@@ -515,22 +526,276 @@ export class GameComponent implements OnInit {
     }
   }
 
-  prevHitTile: Tile = null;
+  populateAIChooseTiles(): void {
+    this.aiChooseTiles = new Array<Array<number>>();
+    for (let i = 0; i < this.gameService.getRow(); i++) {
+      for (let j = 0; j < this.gameService.getCol(); j++) {
+        this.aiChooseTiles.push([i, j]);
+      }
+    }
+    // console.log(this.aiChooseTiles);
+  }
+
+  aiMoveHelper(direction: string, tiles: Tile[][]): void {
+    let d: string = direction;
+    let nextTile: Tile;
+    let count: number = 0;
+
+    if (d === "up") {
+      nextTile = tiles[this.aiPrevTile.getYPos() - 1][this.aiPrevTile.getXPos()];
+      if(nextTile.isUsed() && !nextTile.hasShip()){
+        d = "down";
+        this.predictFlags[0] = 0;
+        this.predictFlags[1] = 1;
+      }
+    }
+    else if (d === "down") {
+      nextTile = tiles[this.aiPrevTile.getYPos() + 1][this.aiPrevTile.getXPos()];
+      if(nextTile.isUsed() && !nextTile.hasShip()){
+        d = "up";
+        this.predictFlags[0] = 1;
+        this.predictFlags[1] = 0;
+      }
+    }
+    else if (d === "left") {
+      nextTile = tiles[this.aiPrevTile.getYPos()][this.aiPrevTile.getXPos() - 1];
+      if(nextTile.isUsed() && !nextTile.hasShip()){
+        d = "right";
+        this.predictFlags[2] = 0;
+        this.predictFlags[3] = 1;
+      }
+    }
+    else if (d === "right") {
+      nextTile = tiles[this.aiPrevTile.getYPos()][this.aiPrevTile.getXPos() + 1];
+      if(nextTile.isUsed() && !nextTile.hasShip()){
+        d = "left";
+        this.predictFlags[2] = 1;
+        this.predictFlags[3] = 0;
+      }
+    }
+
+    do {
+      count++;
+      if (d === "up")
+        nextTile = tiles[this.aiPrevTile.getYPos() - count][this.aiPrevTile.getXPos()];
+      else if (d === "down")
+        nextTile = tiles[this.aiPrevTile.getYPos() + count][this.aiPrevTile.getXPos()];
+      else if (d === "left")
+        nextTile = tiles[this.aiPrevTile.getYPos()][this.aiPrevTile.getXPos() - count];
+      else if (d === "right")
+        nextTile = tiles[this.aiPrevTile.getYPos()][this.aiPrevTile.getXPos() + count];
+
+      console.log('checking if tile is used');
+      console.log(nextTile)
+    } while (nextTile.isUsed());
+
+    nextTile.setIsUsedFlag(true);
+    this.aiPrevTile = nextTile;
+
+    if (nextTile.hasShip()) {
+      this.aiTileHasShipChore(nextTile);
+    } else {
+      nextTile.tileText = "X";
+
+      if (d === "up") {
+        this.predictFlags[0] = 0;
+        this.predictFlags[1] = 1;
+        console.log('change direction - up to down');
+      }
+      else if (d === "down") {
+        this.predictFlags[1] = 0;
+        this.predictFlags[0] = 1;
+        console.log('change direction - down to up');
+      }
+      else if (d === "left") {
+        this.predictFlags[2] = 0;
+        this.predictFlags[3] = 1;
+        console.log('change direction - left to right');
+      }
+      else if (d === "right") {
+        this.predictFlags[3] = 0;
+        this.predictFlags[2] = 1;
+        console.log('change direction - right to left');
+      }
+    }
+  }
+
+  aiTileHasShipChore(tile: Tile): void {
+    tile.getShip().setLives(tile.getShip().getLives() - 1);
+    tile.tileText = "O";
+    if (tile.getShip().getLives() === 0) {
+      this.aiPrevTile = null;
+      this.aiHitShip = null;
+      this.shipAliveCount--;
+      if (this.shipAliveCount === 0) {
+        setTimeout(() => {
+          alert("You lost to computer!");
+          this.router.navigateByUrl("/body/home");
+        }, 0.25);
+      }
+    }
+  }
 
   aiMove(): void {
     let tiles: Tile[][] = this.game.getBoard1().getTiles();
     let x: number;
     let y: number;
+    let index: number;
+    let j: number;
 
-    {
+    if (this.aiPrevTile) {
+      // up
+      if (this.predictFlags[0] === 1) {
+        j = this.aiPrevTile.getYPos() - 1;
+        if (j >= 0 /*&& !tiles[j][this.aiPrevTile.getXPos()].isUsed()/**/) {
+          console.log('ai helper for up');
+          this.aiMoveHelper("up", tiles);
+        } else {
+          console.log('checking y=' + j + ', x=' + this.aiPrevTile.getXPos());
+          console.log('change direction - up to down');
+          this.predictFlags[0] = 0;
+          this.predictFlags[1] = 1;
+          this.aiMoveHelper("down", tiles);
+        }
+      }
+      // down
+      else if (this.predictFlags[1] === 1) {
+        j = this.aiPrevTile.getYPos() + 1;
+        if (j < this.gameService.getRow() /*&& !tiles[j][this.aiPrevTile.getXPos()].isUsed()/**/) {
+          console.log('ai helper for down');
+          this.aiMoveHelper("down", tiles);
+        } else {
+          console.log('checking y=' + j + ', x=' + this.aiPrevTile.getXPos());
+          console.log('change direction - down to up');
+          this.predictFlags[0] = 1;
+          this.predictFlags[1] = 0;
+          this.aiMoveHelper("up", tiles);
+        }
+      }
+      // left
+      else if (this.predictFlags[2] === 1) {
+        j = this.aiPrevTile.getXPos() - 1;
+        if (j >= 0 /*&& !tiles[this.aiPrevTile.getYPos()][j].isUsed()/**/) {
+          console.log('ai helper for left');
+          this.aiMoveHelper("left", tiles);
+        } else {
+          console.log('checking y=' + this.aiPrevTile.getYPos() + ', x=' + j);
+          console.log('change direction - left to right');
+          this.predictFlags[2] = 0;
+          this.predictFlags[3] = 1;
+          this.aiMoveHelper("right", tiles);
+        }
+      }
+      // right
+      else if (this.predictFlags[3] === 1) {
+        j = this.aiPrevTile.getXPos() + 1;
+        if (j < this.gameService.getCol() /*&& !tiles[this.aiPrevTile.getYPos()][j].isUsed()/**/) {
+          console.log('ai helper for right');
+          this.aiMoveHelper("right", tiles);
+        } else {
+          console.log('checking y=' + this.aiPrevTile.getYPos() + ', x=' + j);
+          console.log('change direction - right to left');
+          this.predictFlags[3] = 0;
+          this.predictFlags[2] = 1;
+          this.aiMoveHelper("left", tiles);
+        }
+      }
+      // if orientation undecided
+      else {
+        let randIndex: number;
+        let tempTile: Tile;
+        let flag: boolean = true;
+        let num: number;
+
+        do {
+          console.log('prePredictFlags length: ' + this.prePredictFlags.length);
+
+          randIndex = Math.floor(Math.random() * this.prePredictFlags.length);
+          num = this.prePredictFlags[randIndex];
+          this.prePredictFlags.splice(randIndex, 1);
+
+          if (num === 0 && this.aiPrevTile.getYPos() - 1 >= 0) {
+            tempTile = tiles[this.aiPrevTile.getYPos() - 1][this.aiPrevTile.getXPos()];
+            if (tempTile.isUsed()) continue;
+            tempTile.setIsUsedFlag(true);
+            if (tempTile.hasShip()) {
+              console.log("go up");
+              this.aiPrevTile = tempTile;
+              this.predictFlags[0] = 1;
+              this.aiTileHasShipChore(tempTile);
+            } else {
+              tempTile.tileText = "X";
+            }
+            flag = false;
+          } else if (num === 1 && this.aiPrevTile.getYPos() + 1 < this.gameService.getRow()) {
+            tempTile = tiles[this.aiPrevTile.getYPos() + 1][this.aiPrevTile.getXPos()];
+            if (tempTile.isUsed()) continue;
+            tempTile.setIsUsedFlag(true);
+            if (tempTile.hasShip()) {
+              console.log("go down");
+              this.aiPrevTile = tempTile;
+              this.predictFlags[1] = 1;
+              this.aiTileHasShipChore(tempTile);
+            } else {
+              tempTile.tileText = "X";
+            }
+            flag = false;
+          } else if (num === 2 && this.aiPrevTile.getXPos() - 1 >= 0) {
+            tempTile = tiles[this.aiPrevTile.getYPos()][this.aiPrevTile.getXPos() - 1];
+            if (tempTile.isUsed()) continue;
+            tempTile.setIsUsedFlag(true);
+            if (tempTile.hasShip()) {
+              console.log("go left");
+              this.aiPrevTile = tempTile;
+              this.predictFlags[2] = 1;
+              this.aiTileHasShipChore(tempTile);
+            } else {
+              tempTile.tileText = "X";
+            }
+            flag = false;
+          } else if (num === 3 && this.aiPrevTile.getXPos() + 1 < this.gameService.getCol()) {
+            tempTile = tiles[this.aiPrevTile.getYPos()][this.aiPrevTile.getXPos() + 1];
+            if (tempTile.isUsed()) continue;
+            tempTile.setIsUsedFlag(true);
+            if (tempTile.hasShip()) {
+              console.log("go right");
+              this.aiPrevTile = tempTile;
+              this.predictFlags[3] = 1;
+              this.aiTileHasShipChore(tempTile);
+            } else {
+              tempTile.tileText = "X";
+            }
+            flag = false;
+          }
+          // else {
+          //   if (this.prePredictFlags[randIndex] === 0) this.predictFlags[0] = 0; 
+          //   else if (this.prePredictFlags[randIndex] === 1) this.predictFlags[1] = 0; 
+          //   else if (this.prePredictFlags[randIndex] === 2) this.predictFlags[2] = 0; 
+          //   else if (this.prePredictFlags[randIndex] === 3) this.predictFlags[3] = 0; 
+          // }
+
+        } while (flag);
+      }
+    } else {
       do {
-        x = Math.floor(Math.random() * this.gameService.getCol());
-        y = Math.floor(Math.random() * this.gameService.getRow());
+        // x = Math.floor(Math.random() * this.gameService.getCol());
+        // y = Math.floor(Math.random() * this.gameService.getRow());
+        // console.log('checking ('+y+','+x+')');
+        index = Math.floor(Math.random() * this.aiChooseTiles.length);
+        x = this.aiChooseTiles[index][1];
+        y = this.aiChooseTiles[index][0];
+        this.aiChooseTiles.splice(index, 1);
       } while (tiles[y][x].isUsed());
 
+      // this.aiChooseTiles.splice(index,1);
+      // console.log('x= '+x+',y= '+y);
+
       if (tiles[y][x].hasShip()) {
-        this.aiHitTile = tiles[y][x];
+        this.aiPrevTile = tiles[y][x];
         this.aiHitShip = tiles[y][x].getShip();
+        this.resetPredictFlags();
+        this.resetPrePredictFlags();
+        this.aiHitShip.setLives(this.aiHitShip.getLives() - 1);
         console.log(this.aiHitShip);
         // tiles[y][x].setId("O");
         tiles[y][x].tileText = "O";
@@ -542,6 +807,14 @@ export class GameComponent implements OnInit {
       tiles[y][x].setIsUsedFlag(true);
 
     }
+    console.log(this.aiPrevTile);
+  }
 
+  resetPrePredictFlags(): void {
+    this.prePredictFlags = [0, 1, 2, 3];
+  }
+
+  resetPredictFlags(): void {
+    this.predictFlags = [-1, -1, -1, -1];
   }
 }
