@@ -7,9 +7,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class FooterComponent implements OnInit {
 
+  currentYear: number;
+  githubRepoLink: string;
+
   constructor() { }
 
   ngOnInit(): void {
+    this.currentYear = new Date().getUTCFullYear();
+    this.githubRepoLink = "https://github.com/rxs-99/battleship";
   }
 
 }
