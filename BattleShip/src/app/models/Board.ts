@@ -2,9 +2,9 @@ import { Player } from "./Player";
 import { Tile } from "./Tile";
 
 export class Board{
-    private id: number;
-    private player: Player;
-    private tiles: Array<Array<Tile>>;
+    id: number;
+    player: Player;
+    tiles: Array<Array<Tile>>;
 
     constructor(id?: number, player?: Player, tiles?: Array<Array<Tile>>){
         if(id && player && tiles){

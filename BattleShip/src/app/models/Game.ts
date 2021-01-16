@@ -1,9 +1,9 @@
 import { Board } from "./Board";
 
 export class Game{
-    private id: number;
-    private board1: Board;
-    private board2: Board;
+    id: number;
+    board1: Board;
+    board2: Board;
 
     constructor(id?: number, board1?: Board, board2?: Board){
         if(id)

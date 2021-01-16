@@ -2,23 +2,23 @@ import { Ship } from "./Ship";
 
 export class Tile{
     // combination of row(1-10) and column(A-J)
-    private id: string;
+    id: string;
     // column position
-    private xPos: number;
+    xPos: number;
     // row position
-    private yPos: number;
+    yPos: number;
     // ship id
-    private ship: Ship;
+    ship: Ship;
     // flag for if a ship is dragged over the the tile and is a candidate for hosting the ship
-    private preHasShipFlag: boolean
+    preHasShipFlag: boolean
     // flag for if a tile has ship
-    private hasShipFlag: boolean;
+    hasShipFlag: boolean;
     // flag for is a tile is already used
-    private isUsedFlag: boolean;
+    isUsedFlag: boolean;
     // flag for if a ship can be dropped in the tile or not
-    private isShipDroppableFlag: boolean;
+    isShipDroppableFlag: boolean;
     // flag for if a tile is a neighbor of a tile containing ship
-    private isNeighborOfShipFlag: boolean;
+    isNeighborOfShipFlag: boolean;
 
     tileText: string;
 

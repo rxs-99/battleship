@@ -1,7 +1,13 @@
 <div id="menu-wrapper">
     <ul id="menu">
-        <li *ngFor="let menuItem of menu">
-            <button (click)="onClick(menuItem)">{{menuItem}}</button>
+        <li *ngFor="let menuItem of menu; let i = index">
+            <button (click)="onClick(menuItem)" [disabled]="menuButtonsDisableFlags[i]">{{menuItem}}</button>
         </li>
     </ul>
+
+    <div id="save-game-list" [hidden]="!this.loadGamePopUp">
+        <ul *ngFor="let item of savedGamesInfoList">
+            <li (click)="onClickLoadSaveGame(item)">{{item.saveName}} -- {{item.timeStamp}}</li>
+        </ul>
+    </div>
 </div>

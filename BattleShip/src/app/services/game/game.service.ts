@@ -1,8 +1,10 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { GameInfo } from 'src/app/models/GameInfo';
 import { Player } from 'src/app/models/Player';
 import { SaveGameInfo } from 'src/app/models/SaveGameInfo';
+import { SaveGameInfoByUser } from 'src/app/models/SaveGameInfoByUser';
 import { APIMap } from 'src/app/utility/apiMap';
 
 @Injectable({
@@ -15,9 +17,15 @@ export class GameService {
   // current logged in player
   player: Player;
 
+  isLoaded: boolean;
+
+  loadedGameInfo: GameInfo;
+
   constructor(private http: HttpClient) { 
     this.row = 10;
     this.col = 10;
+
+    this.isLoaded = false;
   }
 
   setRow(row: number): void{
@@ -44,5 +52,13 @@ export class GameService {
   saveGame(saveGameInfo: SaveGameInfo): Observable<boolean>{
     let httpHeader: HttpHeaders = new HttpHeaders().set('Content-Type','application/json');
     return this.http.post(APIMap.saveGame, saveGameInfo, {headers: httpHeader}) as Observable<boolean>;
+  }
+
+  getSaveGameInfoByUserId(): Observable<SaveGameInfoByUser[]>{
+    return this.http.get(APIMap.loadSaveGameNamesByUserId+this.player.userInfo.id) as Observable<SaveGameInfoByUser[]>;
+  }
+
+  getSaveGame(saveName: string): Observable<GameInfo>{
+    return this.http.get(APIMap.getSaveGame + this.player.userInfo.id + "/" + saveName) as Observable<GameInfo>;
   }
 }

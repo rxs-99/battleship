@@ -65,44 +65,56 @@ export class GameComponent implements OnInit {
   saveGamePopUpFlag: boolean;
   saveName: string;
 
+  isLoaded: boolean;
+
   constructor(private boardService: BoardService, private gameService: GameService, private router: Router) { }
 
   ngOnInit(): void {
-    this.playerOneFlag = false;
-    this.playerTwoFlag = true;
-    this.turnMessage = "";
+    console.log(this.gameService.isLoaded);
 
-    this.shipNames = ["destroyer", "cruiser", "submarine", "battleship", "carrier"];
-    this.ships = [];
-    this.shipAliveCount = 0;
-    this.opponentShipAliveCount = 0;
-    this.generateShips();
-    this.startFlag = false;
+    if (this.gameService.isLoaded) {
+      this.isLoaded = true;
+      this.setFields(this.gameService.loadedGameInfo);
+    } else {
+      this.playerOneFlag = false;
+      this.playerTwoFlag = true;
+      this.turnMessage = "";
 
-    this.game = new Game();
+      this.shipNames = ["destroyer", "cruiser", "submarine", "battleship", "carrier"];
+      this.ships = [];
+      this.shipAliveCount = 0;
+      this.opponentShipAliveCount = 0;
+      this.generateShips();
+      this.startFlag = false;
 
-    // generate boards
-    this.game.setBoard1(this.boardService.generateBoard());
-    this.game.setBoard2(this.boardService.generateBoard());
+      this.game = new Game();
 
-    this.placeAIShips();
-    this.populateAIChooseTiles();
+      // generate boards
+      this.game.setBoard1(this.boardService.generateBoard());
+      this.game.setBoard2(this.boardService.generateBoard());
 
-    this.numShipsNotOnBoard = 5;
+      this.placeAIShips();
+      this.populateAIChooseTiles();
 
-    this.aiPrevTile = null;
-    this.aiHitShip = null;
-    this.aiHitShipOrientation = -1;
-    this.streak = 1;
-    this.resetPredictFlags();
-    this.resetPrePredictFlags();
+      this.numShipsNotOnBoard = 5;
 
-    this.saveGamePopUpFlag = false;
-    this.saveName = "";
+      this.aiPrevTile = null;
+      this.aiHitShip = null;
+      this.aiHitShipOrientation = -1;
+      this.streak = 1;
+      this.resetPredictFlags();
+      this.resetPrePredictFlags();
+
+      this.saveGamePopUpFlag = false;
+      this.saveName = "";
+      this.isLoaded = false;
+    }
   }
 
   start(): void {
-    this.togglePlayerFlag();
+    if(!this.isLoaded)
+      this.togglePlayerFlag();
+    console.log(this.game);
     this.startFlag = true;
   }
 
@@ -144,7 +156,7 @@ export class GameComponent implements OnInit {
   }
 
   updateTurnMessage(): void {
-    if(this.playerOneFlag) this.turnMessage = "Your Turn!";
+    if (this.playerOneFlag) this.turnMessage = "Your Turn!";
     else this.turnMessage = "Opponent's turn!";
   }
 
@@ -558,7 +570,7 @@ export class GameComponent implements OnInit {
 
     if (d === "up") {
       nextTile = tiles[this.aiPrevTile.getYPos() - 1][this.aiPrevTile.getXPos()];
-      if(nextTile.isUsed() && !nextTile.hasShip()){
+      if (nextTile.isUsed() && !nextTile.hasShip()) {
         d = "down";
         this.predictFlags[0] = 0;
         this.predictFlags[1] = 1;
@@ -566,7 +578,7 @@ export class GameComponent implements OnInit {
     }
     else if (d === "down") {
       nextTile = tiles[this.aiPrevTile.getYPos() + 1][this.aiPrevTile.getXPos()];
-      if(nextTile.isUsed() && !nextTile.hasShip()){
+      if (nextTile.isUsed() && !nextTile.hasShip()) {
         d = "up";
         this.predictFlags[0] = 1;
         this.predictFlags[1] = 0;
@@ -574,7 +586,7 @@ export class GameComponent implements OnInit {
     }
     else if (d === "left") {
       nextTile = tiles[this.aiPrevTile.getYPos()][this.aiPrevTile.getXPos() - 1];
-      if(nextTile.isUsed() && !nextTile.hasShip()){
+      if (nextTile.isUsed() && !nextTile.hasShip()) {
         d = "right";
         this.predictFlags[2] = 0;
         this.predictFlags[3] = 1;
@@ -582,7 +594,7 @@ export class GameComponent implements OnInit {
     }
     else if (d === "right") {
       nextTile = tiles[this.aiPrevTile.getYPos()][this.aiPrevTile.getXPos() + 1];
-      if(nextTile.isUsed() && !nextTile.hasShip()){
+      if (nextTile.isUsed() && !nextTile.hasShip()) {
         d = "left";
         this.predictFlags[2] = 1;
         this.predictFlags[3] = 0;
@@ -843,30 +855,30 @@ export class GameComponent implements OnInit {
 
     let gameInfo: GameInfo = {
       game: this.game,
-      playerOneFlag : this.playerOneFlag,
-      playerTwoFlag : this.playerTwoFlag,
-      turnMessage : this.turnMessage,
-      shipNames : this.shipNames,
-      ships : this.ships,
-      shipAliveCount : this.shipAliveCount,
-      opponentShipAliveCount : this.opponentShipAliveCount,
-      currentShip : this.currentShip,
-      numShipsNotOnBoard : this.numShipsNotOnBoard,
-      aiPrevTile : this.aiPrevTile,
-      aiHitShip : this.aiHitShip,
-      aiHitShipOrientation : this.aiHitShipOrientation,
-      predictFlags : this.predictFlags,
-      prePredictFlags : this.prePredictFlags,
-      streak : this.streak,
-      aiChooseTiles : this.aiChooseTiles,
-      startFlag : this.startFlag,
-      saveGamePopUpFlag : this.saveGamePopUpFlag,
-      saveName : this.saveName
+      playerOneFlag: this.playerOneFlag,
+      playerTwoFlag: this.playerTwoFlag,
+      turnMessage: this.turnMessage,
+      shipNames: this.shipNames,
+      ships: this.ships,
+      shipAliveCount: this.shipAliveCount,
+      opponentShipAliveCount: this.opponentShipAliveCount,
+      currentShip: this.currentShip,
+      numShipsNotOnBoard: this.numShipsNotOnBoard,
+      aiPrevTile: this.aiPrevTile,
+      aiHitShip: this.aiHitShip,
+      aiHitShipOrientation: this.aiHitShipOrientation,
+      predictFlags: this.predictFlags,
+      prePredictFlags: this.prePredictFlags,
+      streak: this.streak,
+      aiChooseTiles: this.aiChooseTiles,
+      startFlag: this.startFlag,
+      saveGamePopUpFlag: this.saveGamePopUpFlag,
+      saveName: this.saveName
     }
 
-    this.gameService.saveGame({id: 0, saveName: this.saveName, jsonAsText: JSON.stringify(gameInfo), timeStamp: null, user: this.gameService.player.userInfo}).subscribe(
-      (response) =>{
-        if(response){
+    this.gameService.saveGame({ id: 0, saveName: this.saveName, jsonAsText: JSON.stringify(gameInfo), timeStamp: null, user: this.gameService.player.userInfo }).subscribe(
+      (response) => {
+        if (response) {
           this.saveGamePopUpFlag = false;
           this.router.navigateByUrl("/body/home");
         } else {
@@ -875,5 +887,28 @@ export class GameComponent implements OnInit {
       },
       () => { console.log("error saving") }
     );
+  }
+
+  setFields(gameInfo: GameInfo) {
+    this.game = gameInfo.game;
+    this.playerOneFlag = gameInfo.playerOneFlag,
+      this.playerTwoFlag = gameInfo.playerTwoFlag,
+      this.turnMessage = gameInfo.turnMessage,
+      this.shipNames = gameInfo.shipNames,
+      this.ships = gameInfo.ships,
+      this.shipAliveCount = gameInfo.shipAliveCount,
+      this.opponentShipAliveCount = gameInfo.opponentShipAliveCount,
+      this.currentShip = gameInfo.currentShip,
+      this.numShipsNotOnBoard = gameInfo.numShipsNotOnBoard,
+      this.aiPrevTile = gameInfo.aiPrevTile,
+      this.aiHitShip = gameInfo.aiHitShip,
+      this.aiHitShipOrientation = gameInfo.aiHitShipOrientation,
+      this.predictFlags = gameInfo.predictFlags,
+      this.prePredictFlags = gameInfo.prePredictFlags,
+      this.streak = gameInfo.streak,
+      this.aiChooseTiles = gameInfo.aiChooseTiles,
+      this.startFlag = gameInfo.startFlag,
+      this.saveGamePopUpFlag = gameInfo.saveGamePopUpFlag,
+      this.saveName = gameInfo.saveName
   }
 }

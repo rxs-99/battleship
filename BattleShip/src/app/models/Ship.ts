@@ -1,13 +1,13 @@
 export class Ship{
-    private id: string;
-    private name: string;
-    private length: number;
-    private lives: number;
-    private startingIndex: number;
-    private horizontalFlag: boolean;
-    private notOnBoardFlag: boolean;
-    private height: number;
-    private width: number;
+    id: string;
+    name: string;
+    length: number;
+    lives: number;
+    startingIndex: number;
+    horizontalFlag: boolean;
+    notOnBoardFlag: boolean;
+    height: number;
+    width: number;
 
     constructor(name: string, horizontalFlag?: boolean, id?: string){
         this.name = name;
