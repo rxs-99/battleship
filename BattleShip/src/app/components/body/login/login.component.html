@@ -7,10 +7,12 @@
     <br>
     <label for="password">Password:</label>
     <br>
-    <input type="text" id="password" name="password"/>
+    <input type="text" id="password" name="password" [(ngModel)]="password">
     <br>
     <button type="submit" (click)="onClickSignIn()">Sign In</button>
     <br>
+
+    <div *ngIf="incorrectAuthFlag"><p>Incorrect Credentials! Try Again!</p></div>
 
     <a>Sign Up</a>
 </div>

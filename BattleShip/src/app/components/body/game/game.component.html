@@ -1,39 +1,55 @@
 <div id="game-wrapper">
-    <div id="board-one-wrapper">
-        <div class="row-tiles" *ngFor="let rowTiles of game.getBoard1().getTiles()" [class.disabled]="playerOneFlag">
-            <div *ngFor="let tile of rowTiles" class="game-tiles" id={{tile.getId()}} (click)="startFlag && onClickTile(tile)"
-                [class.hit-tile]="tile.hasShip() && tile.isUsed()"
-                [class.missed-tile]="!tile.hasShip() && tile.isUsed()" [class.disabled]="tile.isUsed()" 
-                [class.pre-ship-drop]="tile.getPreHasShipFlag()" [class.has-ship]="tile.hasShip()" 
-                [class.tile-ship-not-droppable]="!tile.isShipDroppable()"
-                [class.neighbor-tile]="tile.isNeighborOfShip()"
-                (drop)="!startFlag && onDrop($event, tile)" (dragleave)="!startFlag && onDragLeave($event, tile)" (dragover)="!startFlag && onDragOver($event, tile)">
-                <!-- {{tile.getId()}} -->
-                 {{tile.tileText}}
+    <div id="board-and-turn-message-wrapper">
+        <div id="board-wrapper">
+            <div id="board-one-wrapper">
+                <div class="board-name">Your Board</div>
+                <div class="row-tiles" *ngFor="let rowTiles of game.getBoard1().getTiles()"
+                    [class.disabled]="playerOneFlag">
+                    <div *ngFor="let tile of rowTiles" class="game-tiles" id={{tile.getId()}}
+                        (click)="startFlag && onClickTile(tile)" [class.hit-tile]="tile.hasShip() && tile.isUsed()"
+                        [class.missed-tile]="!tile.hasShip() && tile.isUsed()" [class.disabled]="tile.isUsed()"
+                        [class.pre-ship-drop]="tile.getPreHasShipFlag()" [class.has-ship]="tile.hasShip()"
+                        [class.tile-ship-not-droppable]="!tile.isShipDroppable()"
+                        [class.neighbor-tile]="tile.isNeighborOfShip()" (drop)="!startFlag && onDrop($event, tile)"
+                        (dragleave)="!startFlag && onDragLeave($event, tile)"
+                        (dragover)="!startFlag && onDragOver($event, tile)">
+                        <!-- {{tile.getId()}} -->
+                        {{tile.tileText}}
+                    </div>
+                </div>
+            </div>
+            <div class="vertical-line"></div>
+            <div id="board-two-wrapper">
+                <div class="board-name">Opponent's Board</div>
+                <div class="row-tiles" *ngFor="let rowTiles of game.getBoard2().getTiles()"
+                    [class.disabled]="playerTwoFlag">
+                    <div *ngFor="let tile of rowTiles" class="game-tiles" id={{tile.getId()}}
+                        (click)="onClickTile(tile)" [class.hit-tile]="tile.hasShip() && tile.isUsed()"
+                        [class.has-ship]="tile.hasShip()" [class.neighbor-tile]="tile.isNeighborOfShip()"
+                        [class.missed-tile]="!tile.hasShip() && tile.isUsed()" [class.disabled]="tile.isUsed()">
+                        <!-- {{tile.getId()}} -->
+                        {{tile.tileText}}
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="vertical-line"></div>
-    <div id="board-two-wrapper">
-        <div class="row-tiles" *ngFor="let rowTiles of game.getBoard2().getTiles()" [class.disabled]="playerTwoFlag">
-            <div *ngFor="let tile of rowTiles" class="game-tiles" id={{tile.getId()}} (click)="onClickTile(tile)"
-                [class.hit-tile]="tile.hasShip() && tile.isUsed()"
-                [class.has-ship]="tile.hasShip()"
-                [class.neighbor-tile]="tile.isNeighborOfShip()"
-                [class.missed-tile]="!tile.hasShip() && tile.isUsed()" [class.disabled]="tile.isUsed()">
-                <!-- {{tile.getId()}} -->
-                 {{tile.tileText}}
-            </div>
-        </div>
+        <div id="turn-message">{{turnMessage}}</div>
     </div>
     <div class="vertical-line"></div>
     <div id="ships-wrapper">
         <ng-container *ngFor="let s of ships">
-            <div *ngIf="s.getNotOnBoardFlag()" class="ship" [id]="'ship-' + s.getName()" [style.width.px]="s.getWidth()" [style.height.px]="s.getHeight()" [draggable]="'true'"
-                (dragstart)="onDragStart(s)" (click)="s.toggleOrientation()">
+            <div *ngIf="s.getNotOnBoardFlag()" class="ship" [id]="'ship-' + s.getName()" [style.width.px]="s.getWidth()"
+                [style.height.px]="s.getHeight()" [draggable]="'true'" (dragstart)="onDragStart(s)"
+                (click)="s.toggleOrientation()">
             </div>
         </ng-container>
     </div>
     <button (click)="start()" [disabled]="numShipsNotOnBoard != 0">Start</button>
     <button (click)="onClickRandomPlace()">Random</button>
+    <button (click)="onClickSaveGame()" [disabled]="!startFlag">Save Game</button>
+
+    <div id="save-game-pop-up" [hidden]="!saveGamePopUpFlag">
+        <input id="save-game-name" type="text" [(ngModel)]="saveName" required/>
+        <button (click)="onSubmitSave()">Save</button>
+    </div>
 </div>

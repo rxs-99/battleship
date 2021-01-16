@@ -1,14 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
-import { Board } from 'src/app/models/Board';
 import { Game } from 'src/app/models/Game';
-import { Player } from 'src/app/models/Player';
 import { Ship } from 'src/app/models/Ship';
 import { Tile } from 'src/app/models/Tile';
 import { BoardService } from 'src/app/services/board/board.service';
 import { GameService } from 'src/app/services/game/game.service';
 import { timer } from 'rxjs';
 import { Router } from '@angular/router';
+import { GameInfo } from 'src/app/models/GameInfo';
 
 @Component({
   selector: 'app-game',
@@ -24,6 +22,8 @@ export class GameComponent implements OnInit {
   playerOneFlag: boolean;
   // player two's turn flag
   playerTwoFlag: boolean;
+  // string variable that holds the message for which player's turn it is
+  turnMessage: string;
 
   // name of ships
   shipNames: string[];
@@ -62,11 +62,15 @@ export class GameComponent implements OnInit {
   // flag for when the user presses start button to start the game after placing the ships
   startFlag: boolean;
 
+  saveGamePopUpFlag: boolean;
+  saveName: string;
+
   constructor(private boardService: BoardService, private gameService: GameService, private router: Router) { }
 
   ngOnInit(): void {
     this.playerOneFlag = false;
     this.playerTwoFlag = true;
+    this.turnMessage = "";
 
     this.shipNames = ["destroyer", "cruiser", "submarine", "battleship", "carrier"];
     this.ships = [];
@@ -92,6 +96,9 @@ export class GameComponent implements OnInit {
     this.streak = 1;
     this.resetPredictFlags();
     this.resetPrePredictFlags();
+
+    this.saveGamePopUpFlag = false;
+    this.saveName = "";
   }
 
   start(): void {
@@ -109,7 +116,7 @@ export class GameComponent implements OnInit {
           setTimeout(() => {
             alert("You beat the computer!");
             this.router.navigateByUrl("/body/home");
-          }, 0.25);
+          }, 250);
 
         }
       }
@@ -123,14 +130,22 @@ export class GameComponent implements OnInit {
     this.playerOneFlag = !this.playerOneFlag;
     this.playerTwoFlag = !this.playerTwoFlag;
 
+    this.updateTurnMessage();
+
     if (this.playerTwoFlag) {
       //this.aiMove();
       timer(0).subscribe(() => {
         this.aiMove();
         this.playerOneFlag = !this.playerOneFlag;
         this.playerTwoFlag = !this.playerTwoFlag;
+        this.updateTurnMessage();
       });
     }
+  }
+
+  updateTurnMessage(): void {
+    if(this.playerOneFlag) this.turnMessage = "Your Turn!";
+    else this.turnMessage = "Opponent's turn!";
   }
 
   generateShips(): void {
@@ -631,7 +646,7 @@ export class GameComponent implements OnInit {
         setTimeout(() => {
           alert("You lost to computer!");
           this.router.navigateByUrl("/body/home");
-        }, 0.25);
+        }, 250);
       }
     }
   }
@@ -816,5 +831,49 @@ export class GameComponent implements OnInit {
 
   resetPredictFlags(): void {
     this.predictFlags = [-1, -1, -1, -1];
+  }
+
+  onClickSaveGame(): void {
+    console.log("clicked on sae game");
+    this.saveGamePopUpFlag = true;
+  }
+
+  onSubmitSave(): void {
+    console.log("clicked on submit save");
+
+    let gameInfo: GameInfo = {
+      game: this.game,
+      playerOneFlag : this.playerOneFlag,
+      playerTwoFlag : this.playerTwoFlag,
+      turnMessage : this.turnMessage,
+      shipNames : this.shipNames,
+      ships : this.ships,
+      shipAliveCount : this.shipAliveCount,
+      opponentShipAliveCount : this.opponentShipAliveCount,
+      currentShip : this.currentShip,
+      numShipsNotOnBoard : this.numShipsNotOnBoard,
+      aiPrevTile : this.aiPrevTile,
+      aiHitShip : this.aiHitShip,
+      aiHitShipOrientation : this.aiHitShipOrientation,
+      predictFlags : this.predictFlags,
+      prePredictFlags : this.prePredictFlags,
+      streak : this.streak,
+      aiChooseTiles : this.aiChooseTiles,
+      startFlag : this.startFlag,
+      saveGamePopUpFlag : this.saveGamePopUpFlag,
+      saveName : this.saveName
+    }
+
+    this.gameService.saveGame({id: 0, saveName: this.saveName, jsonAsText: JSON.stringify(gameInfo), timeStamp: null, user: this.gameService.player.userInfo}).subscribe(
+      (response) =>{
+        if(response){
+          this.saveGamePopUpFlag = false;
+          this.router.navigateByUrl("/body/home");
+        } else {
+          console.log("couldn't save. try again!");
+        }
+      },
+      () => { console.log("error saving") }
+    );
   }
 }

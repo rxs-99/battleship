@@ -4,8 +4,13 @@
     padding: 15px;
 }
 
+#board-wrapper {
+    display: flex;
+    flex-direction: row;
+}
+
 .vertical-line {
-    margin: 2px;
+    margin: 10px;
 }
 
 .row-tiles {
@@ -66,4 +71,15 @@
     color: black !important;
 }
 
+.board-name {
+    font-size: 1.5em;
+    padding-bottom: 15px;
+    text-align: center;
+}
+
+#turn-message {
+    padding-top: 15px;
+    text-align: center;
+    font-size: 1.3em;
+}
 
