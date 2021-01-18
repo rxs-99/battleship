@@ -6,7 +6,9 @@ import { BoardService } from 'src/app/services/board/board.service';
 import { GameService } from 'src/app/services/game/game.service';
 import { timer } from 'rxjs';
 import { Router } from '@angular/router';
-import { GameInfo } from 'src/app/models/GameInfo';
+import { GameInfo } from 'src/app/models/interface/GameInfo';
+import { TileInfo } from 'src/app/models/interface/TileInfo';
+import { ShipInterface } from 'src/app/models/interface/ShipInterface';
 
 @Component({
   selector: 'app-game',
@@ -29,6 +31,7 @@ export class GameComponent implements OnInit {
   shipNames: string[];
   // ships in player's board
   ships: Ship[];
+  opponentShips: Ship[];
   // # of ships not sunk
   shipAliveCount: number;
   opponentShipAliveCount: number;
@@ -70,28 +73,40 @@ export class GameComponent implements OnInit {
   constructor(private boardService: BoardService, private gameService: GameService, private router: Router) { }
 
   ngOnInit(): void {
-    console.log(this.gameService.isLoaded);
+    this.game = new Game();
+    // generate boards
+    this.game.setBoard1(this.boardService.generateBoard());
+    this.game.setBoard2(this.boardService.generateBoard());
+
+    this.shipNames = ["destroyer", "cruiser", "submarine", "battleship", "carrier"];
+    this.saveGamePopUpFlag = false;
+
+    this.ships = [];
+    this.opponentShips = [];
+
+    this.startFlag = false;
 
     if (this.gameService.isLoaded) {
       this.isLoaded = true;
-      this.setFields(this.gameService.loadedGameInfo);
+      this.setGameInfo(this.gameService.loadedGameInfo);
     } else {
       this.playerOneFlag = false;
       this.playerTwoFlag = true;
       this.turnMessage = "";
 
-      this.shipNames = ["destroyer", "cruiser", "submarine", "battleship", "carrier"];
-      this.ships = [];
+      // this.shipNames = ["destroyer", "cruiser", "submarine", "battleship", "carrier"];
+      // this.ships = [];
+      // this.opponentShips = [];
       this.shipAliveCount = 0;
       this.opponentShipAliveCount = 0;
       this.generateShips();
-      this.startFlag = false;
+      // this.startFlag = false;
 
-      this.game = new Game();
+      // this.game = new Game();
 
-      // generate boards
-      this.game.setBoard1(this.boardService.generateBoard());
-      this.game.setBoard2(this.boardService.generateBoard());
+      // // generate boards
+      // this.game.setBoard1(this.boardService.generateBoard());
+      // this.game.setBoard2(this.boardService.generateBoard());
 
       this.placeAIShips();
       this.populateAIChooseTiles();
@@ -105,16 +120,18 @@ export class GameComponent implements OnInit {
       this.resetPredictFlags();
       this.resetPrePredictFlags();
 
-      this.saveGamePopUpFlag = false;
+      // this.saveGamePopUpFlag = false;
       this.saveName = "";
       this.isLoaded = false;
     }
+
+    console.log("waiting for to click start");
   }
 
   start(): void {
-    if(!this.isLoaded)
+    if (!this.isLoaded)
       this.togglePlayerFlag();
-    console.log(this.game);
+    this.isLoaded = false;
     this.startFlag = true;
   }
 
@@ -548,6 +565,7 @@ export class GameComponent implements OnInit {
   placeAIShips(): void {
     for (let name of this.shipNames) {
       let s: Ship = new Ship(name);
+      this.opponentShips.push(s);
       this.randomShipPlacement(s, this.game.getBoard2().getTiles());
       this.opponentShipAliveCount++;
     }
@@ -853,30 +871,30 @@ export class GameComponent implements OnInit {
   onSubmitSave(): void {
     console.log("clicked on submit save");
 
-    let gameInfo: GameInfo = {
-      game: this.game,
-      playerOneFlag: this.playerOneFlag,
-      playerTwoFlag: this.playerTwoFlag,
-      turnMessage: this.turnMessage,
-      shipNames: this.shipNames,
-      ships: this.ships,
-      shipAliveCount: this.shipAliveCount,
-      opponentShipAliveCount: this.opponentShipAliveCount,
-      currentShip: this.currentShip,
-      numShipsNotOnBoard: this.numShipsNotOnBoard,
-      aiPrevTile: this.aiPrevTile,
-      aiHitShip: this.aiHitShip,
-      aiHitShipOrientation: this.aiHitShipOrientation,
-      predictFlags: this.predictFlags,
-      prePredictFlags: this.prePredictFlags,
-      streak: this.streak,
-      aiChooseTiles: this.aiChooseTiles,
-      startFlag: this.startFlag,
-      saveGamePopUpFlag: this.saveGamePopUpFlag,
-      saveName: this.saveName
-    }
+    // let gameInfo: GameInfo = {
+    //   playerOneFlag: this.playerOneFlag,
+    //   playerTwoFlag: this.playerTwoFlag,
+    //   turnMessage: this.turnMessage,
+    //   shipNames: this.shipNames,
+    //   ships: this.ships,
+    //   opponentShips: this.opponentShips,
+    //   shipAliveCount: this.shipAliveCount,
+    //   opponentShipAliveCount: this.opponentShipAliveCount,
+    //   currentShip: this.currentShip,
+    //   numShipsNotOnBoard: this.numShipsNotOnBoard,
+    //   aiPrevTile: this.aiPrevTile,
+    //   aiHitShip: this.aiHitShip,
+    //   aiHitShipOrientation: this.aiHitShipOrientation,
+    //   predictFlags: this.predictFlags,
+    //   prePredictFlags: this.prePredictFlags,
+    //   streak: this.streak,
+    //   aiChooseTiles: this.aiChooseTiles,
+    //   startFlag: this.startFlag,
+    //   saveGamePopUpFlag: this.saveGamePopUpFlag,
+    //   saveName: this.saveName
+    // }
 
-    this.gameService.saveGame({ id: 0, saveName: this.saveName, jsonAsText: JSON.stringify(gameInfo), timeStamp: null, user: this.gameService.player.userInfo }).subscribe(
+    this.gameService.saveGame({ id: 0, saveName: this.saveName, jsonAsText: JSON.stringify(this.getGameInfo()), timeStamp: null, user: this.gameService.player.userInfo }).subscribe(
       (response) => {
         if (response) {
           this.saveGamePopUpFlag = false;
@@ -889,26 +907,173 @@ export class GameComponent implements OnInit {
     );
   }
 
-  setFields(gameInfo: GameInfo) {
-    this.game = gameInfo.game;
-    this.playerOneFlag = gameInfo.playerOneFlag,
-      this.playerTwoFlag = gameInfo.playerTwoFlag,
-      this.turnMessage = gameInfo.turnMessage,
-      this.shipNames = gameInfo.shipNames,
-      this.ships = gameInfo.ships,
-      this.shipAliveCount = gameInfo.shipAliveCount,
-      this.opponentShipAliveCount = gameInfo.opponentShipAliveCount,
-      this.currentShip = gameInfo.currentShip,
-      this.numShipsNotOnBoard = gameInfo.numShipsNotOnBoard,
-      this.aiPrevTile = gameInfo.aiPrevTile,
-      this.aiHitShip = gameInfo.aiHitShip,
-      this.aiHitShipOrientation = gameInfo.aiHitShipOrientation,
-      this.predictFlags = gameInfo.predictFlags,
-      this.prePredictFlags = gameInfo.prePredictFlags,
-      this.streak = gameInfo.streak,
-      this.aiChooseTiles = gameInfo.aiChooseTiles,
-      this.startFlag = gameInfo.startFlag,
-      this.saveGamePopUpFlag = gameInfo.saveGamePopUpFlag,
-      this.saveName = gameInfo.saveName
+  getGameInfo(): GameInfo {
+
+    let tileInfo1: TileInfo[][] = new Array<Array<TileInfo>>();
+    let tileInfo2: TileInfo[][] = new Array<Array<TileInfo>>();
+
+    let t1: Tile[][] = this.game.getBoard1().getTiles();
+    let i: number = 0;
+    for (let tArr of t1) {
+      tileInfo1.push(new Array<TileInfo>());
+      for (let t of tArr) {
+        tileInfo1[i].push({
+          shipName: t.getShip() ? t.getShip().getName() : null,
+          preHasShipFlag: t.getPreHasShipFlag(),
+          hasShipFlag: t.hasShip(),
+          isUsedFlag: t.isUsed(),
+          isShipDroppableFlag: t.isShipDroppable(),
+          isNeighborOfShipFlag: t.isNeighborOfShip(),
+          tileText: t.tileText
+        });
+      }
+      i++;
+    }
+
+    let t2: Tile[][] = this.game.getBoard2().getTiles();
+    i = 0;
+    for (let tArr of t2) {
+      tileInfo2.push(new Array<TileInfo>());
+      for (let t of tArr) {
+        tileInfo2[i].push({
+          shipName: t.getShip() ? t.getShip().getName() : null,
+          preHasShipFlag: t.getPreHasShipFlag(),
+          hasShipFlag: t.hasShip(),
+          isUsedFlag: t.isUsed(),
+          isShipDroppableFlag: t.isShipDroppable(),
+          isNeighborOfShipFlag: t.isNeighborOfShip(),
+          tileText: t.tileText
+        });
+      }
+      i++;
+    }
+
+    console.log(this);
+
+    return {
+      playerTileInfo: tileInfo1,
+      opponentTileInfo: tileInfo2,
+      playerOneFlag: this.playerOneFlag,
+      playerTwoFlag: this.playerTwoFlag,
+      turnMessage: this.turnMessage,
+      shipNames: this.shipNames,
+      ships: this.ships,
+      opponentShips: this.opponentShips,
+      shipAliveCount: this.shipAliveCount,
+      opponentShipAliveCount: this.opponentShipAliveCount,
+      currentShip: this.currentShip,
+      numShipsNotOnBoard: this.numShipsNotOnBoard,
+      aiPrevTileCoOrdinates: this.aiPrevTile ? [this.aiPrevTile.getYPos(),this.aiPrevTile.getXPos()] : null,
+      aiHitShipName: this.aiHitShip ? this.aiHitShip.getName() : null,
+      aiHitShipOrientation: this.aiHitShipOrientation,
+      predictFlags: this.predictFlags,
+      prePredictFlags: this.prePredictFlags,
+      streak: this.streak,
+      aiChooseTiles: this.aiChooseTiles,
+      startFlag: this.startFlag,
+      saveGamePopUpFlag: this.saveGamePopUpFlag,
+      saveName: this.saveName
+    }
   }
+
+  setGameInfo(gameInfo: GameInfo): void {
+
+    console.log("started set game info");
+
+    this.playerOneFlag = gameInfo.playerOneFlag;
+    this.playerTwoFlag = gameInfo.playerTwoFlag
+    this.turnMessage = gameInfo.turnMessage;
+
+    this.shipAliveCount = gameInfo.shipAliveCount;
+    this.opponentShipAliveCount = gameInfo.opponentShipAliveCount;
+
+    this.numShipsNotOnBoard = gameInfo.numShipsNotOnBoard;
+
+    this.aiHitShipOrientation = gameInfo.aiHitShipOrientation;
+    this.predictFlags = gameInfo.predictFlags;
+    this.prePredictFlags = gameInfo.prePredictFlags;
+    this.streak = gameInfo.streak;
+    this.aiChooseTiles = gameInfo.aiChooseTiles;
+    this.saveName = gameInfo.saveName;
+
+    // this.ships = gameInfo.ships;
+    // this.opponentShips = gameInfo.opponentShips;
+
+    console.log("before set ship");
+
+    for(let i = 0; i < gameInfo.ships.length; i++){
+      this.ships.push(Object.assign(new Ship(),gameInfo.ships[i]));
+    }
+
+    for(let i = 0; i < gameInfo.opponentShips.length; i++){
+      this.opponentShips.push(Object.assign(new Ship(),gameInfo.opponentShips[i]));
+    }
+
+    console.log("after set ship");
+    
+    let playerBoardTiles: Tile[][] = this.game.getBoard1().getTiles();
+    for (let i = 0; i < playerBoardTiles.length; i++) {
+      for (let j = 0; j < playerBoardTiles[0].length; j++) {
+        playerBoardTiles[i][j].setPreHasShipFlag(gameInfo.playerTileInfo[i][j].preHasShipFlag);
+        playerBoardTiles[i][j].setHasShipFlag(gameInfo.playerTileInfo[i][j].hasShipFlag);
+        playerBoardTiles[i][j].setIsUsedFlag(gameInfo.playerTileInfo[i][j].isUsedFlag);
+        playerBoardTiles[i][j].setIsShipDroppable(gameInfo.playerTileInfo[i][j].isShipDroppableFlag);
+        playerBoardTiles[i][j].setIsNeighborOfShipFlag(gameInfo.playerTileInfo[i][j].isNeighborOfShipFlag);
+        playerBoardTiles[i][j].tileText = gameInfo.playerTileInfo[i][j].tileText;
+        playerBoardTiles[i][j].setShip(this.ships[this.getShipIndex(gameInfo.playerTileInfo[i][j].shipName)]);
+      }
+    }
+
+    let opponentBoardTiles: Tile[][] = this.game.getBoard2().getTiles();
+    for (let i = 0; i < opponentBoardTiles.length; i++) {
+      for (let j = 0; j < opponentBoardTiles[0].length; j++) {
+        opponentBoardTiles[i][j].setPreHasShipFlag(gameInfo.opponentTileInfo[i][j].preHasShipFlag);
+        opponentBoardTiles[i][j].setHasShipFlag(gameInfo.opponentTileInfo[i][j].hasShipFlag);
+        opponentBoardTiles[i][j].setIsUsedFlag(gameInfo.opponentTileInfo[i][j].isUsedFlag);
+        opponentBoardTiles[i][j].setIsShipDroppable(gameInfo.opponentTileInfo[i][j].isShipDroppableFlag);
+        opponentBoardTiles[i][j].setIsNeighborOfShipFlag(gameInfo.opponentTileInfo[i][j].isNeighborOfShipFlag);
+        opponentBoardTiles[i][j].tileText = gameInfo.opponentTileInfo[i][j].tileText;
+        opponentBoardTiles[i][j].setShip(this.opponentShips[this.getShipIndex(gameInfo.opponentTileInfo[i][j].shipName)]);
+      }
+    }
+
+    this.aiPrevTile = gameInfo.aiPrevTileCoOrdinates ? playerBoardTiles[gameInfo.aiPrevTileCoOrdinates[0]][gameInfo.aiPrevTileCoOrdinates[1]] : null;
+    this.aiHitShip = gameInfo.aiHitShipName ? this.ships[this.getShipIndex(gameInfo.aiHitShipName)] : null;
+
+    console.log("finished set game info");
+
+    console.log(this);
+  }
+
+  getShipIndex(name: string): number {
+    if (name === 'destroyer') return 0;
+    else if (name === 'cruiser') return 1;
+    else if (name === 'submarine') return 2;
+    else if (name === 'battleship') return 3;
+    else if (name === 'carrier') return 4;
+  }
+
+  // setFields(gameInfo: GameInfo) {
+  //   this.game = gameInfo.game;
+  //   this.playerOneFlag = gameInfo.playerOneFlag;
+  //   this.playerTwoFlag = gameInfo.playerTwoFlag;
+  //   this.turnMessage = gameInfo.turnMessage;
+  //   this.shipNames = gameInfo.shipNames;
+  //   this.ships = gameInfo.ships;
+  //   this.opponentShips = gameInfo.opponentShips;
+  //   this.shipAliveCount = gameInfo.shipAliveCount;
+  //   this.opponentShipAliveCount = gameInfo.opponentShipAliveCount;
+  //   this.currentShip = gameInfo.currentShip;
+  //   this.numShipsNotOnBoard = gameInfo.numShipsNotOnBoard;
+  //   this.aiPrevTile = gameInfo.aiPrevTile;
+  //   this.aiHitShip = gameInfo.aiHitShip;
+  //   this.aiHitShipOrientation = gameInfo.aiHitShipOrientation;
+  //   this.predictFlags = gameInfo.predictFlags;
+  //   this.prePredictFlags = gameInfo.prePredictFlags;
+  //   this.streak = gameInfo.streak;
+  //   this.aiChooseTiles = gameInfo.aiChooseTiles;
+  //   this.startFlag = gameInfo.startFlag;
+  //   this.saveGamePopUpFlag = gameInfo.saveGamePopUpFlag;
+  //   this.saveName = gameInfo.saveName;
+  // }
 }

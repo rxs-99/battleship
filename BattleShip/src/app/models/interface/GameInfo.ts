@@ -1,10 +1,14 @@
-import { Game } from "./Game";
-import { Ship } from "./Ship";
-import { Tile } from "./Tile";
+import { Game } from "../Game";
+import { Ship } from "../Ship";
+import { Tile } from "../Tile";
+import { TileInfo } from "./TileInfo";
 
 export interface GameInfo {
-    // game
-    game: Game;
+
+    // game info
+    playerTileInfo: TileInfo[][];
+    opponentTileInfo: TileInfo[][];
+
     // player one's turn flag
     playerOneFlag: boolean;
     // player two's turn flag
@@ -16,6 +20,7 @@ export interface GameInfo {
     shipNames: string[];
     // ships in player's board
     ships: Ship[];
+    opponentShips: Ship[];
     // # of ships not sunk
     shipAliveCount: number;
     opponentShipAliveCount: number;
@@ -28,9 +33,9 @@ export interface GameInfo {
 
     // for AI's move
     // tile of a ship that is hit first by the AI
-    aiPrevTile: Tile;
+    aiPrevTileCoOrdinates: number[];
     // ship associated with the aiHitTile
-    aiHitShip: Ship;
+    aiHitShipName: string;
     // ship orientation -- 0 for vertical, 1 for horizontal
     aiHitShipOrientation: number;
     // if hit tile, tells the ai its next move based on tiles hit

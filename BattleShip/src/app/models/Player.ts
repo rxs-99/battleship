@@ -1,4 +1,4 @@
-import { UserInfo } from "./UserInfo";
+import { UserInfo } from "./interface/UserInfo";
 
 export class Player {
     username: string;

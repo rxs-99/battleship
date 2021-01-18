@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { SaveGameInfoByUser } from 'src/app/models/SaveGameInfoByUser';
+import { SaveGameInfoByUser } from 'src/app/models/interface/SaveGameInfoByUser';
 import { GameService } from 'src/app/services/game/game.service';
 
 @Component({

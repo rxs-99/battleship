@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable, queueScheduler, scheduled} from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
-import { Login } from 'src/app/models/Login';
+import { Login } from 'src/app/models/interface/Login';
 import { environment } from 'src/environments/environment';
 import { APIMap } from 'src/app/utility/apiMap';
-import { UserInfo } from 'src/app/models/UserInfo';
+import { UserInfo } from 'src/app/models/interface/UserInfo';
 
 @Injectable({
   providedIn: 'root'
