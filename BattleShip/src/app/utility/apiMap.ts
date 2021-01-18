@@ -4,5 +4,6 @@ export const APIMap = {
     login: environment.apiServer + "auth/login/",
     saveGame: environment.apiServer + "game/save/",
     loadSaveGameNamesByUserId: environment.apiServer + "game/user/",
-    getSaveGame: environment.apiServer + "game/"
+    getSaveGame: environment.apiServer + "game/",
+    saveAuth: environment.apiServer + "auth/save"
 }

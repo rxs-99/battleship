@@ -3,7 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { BodyComponent } from './components/body/body.component';
 import { GameComponent } from './components/body/game/game.component';
 import { HomeComponent } from './components/body/home/home.component';
-import { LoginComponent } from './components/body/login/login.component';
+import { LoginComponent } from './components/body/login-register/login.component';
 
 const routes: Routes = [
   {path: '', redirectTo: 'body/login', pathMatch: 'full'},

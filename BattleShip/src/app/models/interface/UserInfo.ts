@@ -1,7 +1,7 @@
 export interface UserInfo {
     id: number,
     totalGames: number,
-    totalWinds: number,
+    totalWins: number,
     totalLosses: number,
     email: string
 }

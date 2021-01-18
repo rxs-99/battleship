@@ -1,0 +1,30 @@
+<div id="login-wrapper">
+    <h1>Welcome</h1>
+
+    <label for="username">Username:</label>
+    <br>
+    <input type="text" id="username" name="username" [(ngModel)]="username" required />
+    <br>
+    <label for="password">Password:</label>
+    <br>
+    <input type="password" id="password" name="password" [(ngModel)]="password" required />
+    <br>
+    <div id="sign-up-stuffs" *ngIf="signUpFlag">
+        <label for="re-password">Re-enter password:</label>
+        <br>
+        <input type="password" id="re-password" name="re-password" [(ngModel)]="rePassword" required />
+        <br>
+        <label for="email">Email:</label>
+        <br>
+        <input type="email" id="email" name="email" [(ngModel)]="email">
+        <br>
+    </div>
+    <button *ngIf="!signUpFlag" type="submit" (click)="onClickSignIn()">Sign In</button>
+    <br>
+
+    <div *ngIf="incorrectAuthFlag">
+        <p>Incorrect Credentials! Try Again!</p>
+    </div>
+
+    <button (click)="onClickSignUp()">Sign Up</button>
+</div>

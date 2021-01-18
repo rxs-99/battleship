@@ -64,7 +64,7 @@ export class GameService {
   }
 
   savePlayerOnSessionStorage(): void{
-    sessionStorage.setItem('player', JSON.stringify(this.player));
+    if(this.player) sessionStorage.setItem('player', JSON.stringify(this.player));
   }
 
   getPlayerFromSessionStorage(): void{

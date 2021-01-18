@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { Observable, queueScheduler, scheduled} from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { Login } from 'src/app/models/interface/Login';
-import { environment } from 'src/environments/environment';
 import { APIMap } from 'src/app/utility/apiMap';
 import { UserInfo } from 'src/app/models/interface/UserInfo';
+import { AuthInfo } from 'src/app/models/interface/AuthInfo';
 
 @Injectable({
   providedIn: 'root'
@@ -20,5 +20,10 @@ export class AuthService {
 
     //return scheduled([true],queueScheduler);
     return this.http.post(APIMap.login, loginInfo, {headers:httpHeader}) as Observable<UserInfo>;
+  }
+
+  save(authInfo: AuthInfo): Observable<UserInfo>{
+    let httpHeader: HttpHeaders = new HttpHeaders().set('Content-Type', 'application/json');
+    return this.http.post(APIMap.saveAuth, authInfo, {headers:httpHeader}) as Observable<UserInfo>;
   }
 }

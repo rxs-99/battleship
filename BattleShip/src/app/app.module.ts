@@ -8,8 +8,7 @@ import { AppComponent } from './app.component';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { HomeComponent } from './components/body/home/home.component';
-import { LoginComponent } from './components/body/login/login.component';
-import { RegisterComponent } from './components/body/register/register.component';
+import { LoginComponent } from './components/body/login-register/login.component';
 import { BodyComponent } from './components/body/body.component';
 import { FormsModule } from '@angular/forms';
 import { GameComponent } from './components/body/game/game.component';
@@ -25,7 +24,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     FooterComponent,
     HomeComponent,
     LoginComponent,
-    RegisterComponent,
     BodyComponent,
     GameComponent,
     NumToArrPipe,
